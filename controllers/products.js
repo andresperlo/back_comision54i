@@ -8,13 +8,11 @@ const getAllProducts = async (req, res) => {/* req - request, res - response */
     const allProducts = await ProductModel.find()
     res.status(200).json({ msg: 'Productos en el array', allProducts })
   } catch (error) {
-    console.log(error)
     throw new Error('No se pudo enviar los productos', error)
   }
 }
 
 const getOneProduct = async (req, res) => {/* req - request, res - response */
-  console.log(req.params)
   const errors = validationResult(req)
 
   if (!errors.isEmpty()) {
@@ -26,7 +24,6 @@ const getOneProduct = async (req, res) => {/* req - request, res - response */
     const oneProduct = await ProductModel.findOne({ _id: req.params.id })
     res.status(200).json({ msg: 'Producto en la base de datos', oneProduct })
   } catch (error) {
-    console.log(error)
     throw new Error('No se pudo enviar los productos', error)
   }
 }
@@ -46,7 +43,6 @@ const createProduct = async (req, res) => {
 
     res.status(201).json({ msg: 'Producto creado correctamente', body, status:201 })
   } catch (error) {
-    console.log(error)
     throw new Error('No se pudo crear el producto', error)
   }
 }
@@ -62,7 +58,6 @@ const updateProduct = async (req, res) => {
     const updateProd = await ProductModel.findByIdAndUpdate({ _id: req.params.id }, req.body, { new: true })
     res.status(200).json({ msg: 'Producto editado correctamente', updateProd, status: 200 })
   } catch (error) {
-    console.log(error)
     throw new Error('No se pudo modificar el producto', error)
   }
 }
@@ -78,7 +73,6 @@ const deleteProduct = async (req, res) => {
     await ProductModel.findByIdAndDelete({ _id: req.params.id })
     res.status(200).json({ msg: 'Se borro correctamente el producto', status: 200 })
   } catch (error) {
-    console.log(error)
     throw new Error('No se pudo borrar el producto', error)
   }
 }

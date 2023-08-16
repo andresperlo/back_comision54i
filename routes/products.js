@@ -15,7 +15,7 @@ router.post('/', [
   check('precio', 'campo precio esta vacio').notEmpty(),
   check('codigo', 'campo codigo esta vacio').notEmpty()
 
-], auth('admin'),createProduct)
+], createProduct)
 router.put('/:id', [
   check('id', 'Formato ID Incorrecto').isMongoId()
 ], auth('admin'), updateProduct)

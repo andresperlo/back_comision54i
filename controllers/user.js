@@ -3,13 +3,14 @@ const UserModel = require("../models/user")
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const CartModel = require("../models/cart")
+const { findByIdAndUpdate } = require("../models/product")
 
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await UserModel.find()
     res.status(200).json({ msg: 'Usuarios encontrados', allUsers })
   } catch (error) {
-    res.status(500).json({msg: 'No se encontro a los usuarios', error})
+    res.status(500).json({ msg: 'No se encontro a los usuarios', error })
   }
 }
 
@@ -20,12 +21,10 @@ const getOneUser = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json({ msg: errors.array() })
     }
-    console.log(req.params.id )
     const oneUser = await UserModel.findOne({ _id: req.params.id })
-    console.log(oneUser)
     res.status(200).json({ msg: 'usuario encontrado', oneUser })
   } catch (error) {
-    res.status(500).json({msg:'No se encontro al usuario', error})
+    res.status(500).json({ msg: 'No se encontro al usuario', error })
   }
 }
 
@@ -36,7 +35,7 @@ const createUser = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json({ msg: errors.array() })
     }
-  
+
     const userExist = await UserModel.findOne({ username: req.body.username })
 
     if (userExist) {
@@ -55,9 +54,9 @@ const createUser = async (req, res) => {
     await newUser.save()
     await newCart.save()
 
-    res.status(201).json({ msg: 'Usuario creado correctamente', newUser, status: 201})
+    res.status(201).json({ msg: 'Usuario creado correctamente', newUser, status: 201 })
   } catch (error) {
-    res.status(500).json({msg:'Error al crear el usuario', error})
+    res.status(500).json({ msg: 'Error al crear el usuario', error })
   }
 }
 
@@ -68,12 +67,12 @@ const updateUser = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json({ msg: errors.array() })
     }
-  
-    
+
+
     const updateDataUser = await UserModel.findByIdAndUpdate({ _id: req.params.id }, req.body, { new: true })
-    res.status(200).json({ msg: 'Usuario actualizado', updateDataUser, status:200 })
+    res.status(200).json({ msg: 'Usuario actualizado', updateDataUser, status: 200 })
   } catch (error) {
-    res.status(500).json({msg:'Error en los datos', error})
+    res.status(500).json({ msg: 'Error en los datos', error })
   }
 }
 
@@ -85,17 +84,17 @@ const deleteUser = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json({ msg: errors.array() })
     }
-  
-    
+
+
     await UserModel.findByIdAndDelete({ _id: req.params.id })
     res.status(200).json({ msg: 'Usuario eliminado correctamente' })
   } catch (error) {
-     res.status(500).json({msg:'Error al borrar', error})
+    res.status(500).json({ msg: 'Error al borrar', error })
   }
 }
 
 const loginUser = async (req, res) => {/* req - request - res - resolve */
-  try {  
+  try {
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
@@ -112,7 +111,7 @@ const loginUser = async (req, res) => {/* req - request - res - resolve */
 
     if (passCheck) {
       const payload_jwt = {
-        user:{
+        user: {
           id: userExist._id,
           role: userExist.role
         }
@@ -126,16 +125,18 @@ const loginUser = async (req, res) => {/* req - request - res - resolve */
       res.status(400).json({ msg: 'Usuario y/o contraseña incorrecto' })
     }
   } catch (error) {
-    console.log(error)
-    res.status(500).json({msg: 'Error al iniciar sesion', error})
+    res.status(500).json({ msg: 'Error al iniciar sesion', error })
   }
 }
 
 const logout = async (req, res) => {
   try {
-    
+    const user = await UserModel.findOne({ _id: req.idUser })
+    user.token = ''
+    await UserModel.findByIdAndUpdate({ _id: req.idUser }, user, { new: true })
+    res.status(200).json({ msg: 'Usuario Deslogueado' })
   } catch (error) {
-    console.log(error)
+    res.status(500).json(error)
   }
 }
 
@@ -145,5 +146,6 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-  loginUser
+  loginUser,
+  logout
 }

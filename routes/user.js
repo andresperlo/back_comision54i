@@ -1,11 +1,12 @@
 const { Router } = require('express')
 const { check } = require('express-validator')
 
-const { getAllUsers, getOneUser, createUser, updateUser, deleteUser, loginUser } = require('../controllers/user')
+const { getAllUsers, getOneUser, createUser, updateUser, deleteUser, loginUser, logout } = require('../controllers/user')
 const auth = require('../middlewares/auth')
 const router = Router()
 
 router.get('/',auth('admin'), getAllUsers)
+router.get('/logout',auth(['admin', 'user']), logout)
 router.get('/:id', [
   check('id', 'Formato ID incorrecto').isMongoId()
 ],auth(['admin', 'user']),getOneUser)
